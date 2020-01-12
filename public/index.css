@@ -3,37 +3,35 @@ html, body, #root, #root > div {
   margin: 0;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
-  background: black;
-  background-repeat: repeat;
-}
-
-.box {
-  background: white;
-  overflow: hidden;
-}
-
-.box img {
-  height: 80px;
 }
 
 .view {
   background: gray;
   overflow: hidden;
-  height: 600px;
-  width: 4400px;
+  height: 100vh;
   overflow-x: auto;
 }
 
-.dragger {
-  width: 50px;
-  height: 100%;
-  background: red;
-  position: fixed;
-  right: 0;
-  top: 0;
+.List {
+  border: 1px solid #d9dddd;
+  -ms-touch-action: none;
+      touch-action: none;
 }
 
-.dragger:hover {
-  background: blue;
+.ListItemEven,
+.ListItemOdd {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.ListItemEven {
+  background-color: #f8f8f0;
 }
 /*# sourceMappingURL=index.css.map */
