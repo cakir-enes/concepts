@@ -1,11 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-class HelloMessage extends React.Component {
-  render() {
-    return <div>Hello {this.props.name}</div>;
-  }
-}
+import { View } from "./view";
+import Moveable from "react-moveable"; // preact
 
 var mountNode = document.getElementById("app");
-ReactDOM.render(<HelloMessage name="aasd" />, mountNode);
+ReactDOM.render(<View />, mountNode);

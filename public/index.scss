@@ -1,0 +1,42 @@
+html, body, #root, #root > div {
+  // scroll-behavior: smooth;
+    height: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    background: black;
+      background-repeat: repeat;  
+  }
+
+  .box {
+      background: white;
+      overflow: hidden;
+      & img {
+        height: 80px;
+      }
+  }
+
+  .view {
+      // display: flex;
+      background: gray;
+      overflow: hidden;
+      height: 600px;
+      width: 4400px;
+      overflow-x: auto;
+      // height: 100%;
+    
+      // grid-template-columns: auto;
+      // grid-template-rows: 1fr;
+  }
+
+  .dragger {
+    width: 50px;
+    height: 100%;
+    background: red;
+    position: fixed;
+    // position: absolute;
+    right: 0;
+    top: 0;
+    &:hover {
+      background: blue;
+    }
+  }

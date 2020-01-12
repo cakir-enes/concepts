@@ -1,0 +1,39 @@
+html, body, #root, #root > div {
+  height: 100%;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: black;
+  background-repeat: repeat;
+}
+
+.box {
+  background: white;
+  overflow: hidden;
+}
+
+.box img {
+  height: 80px;
+}
+
+.view {
+  background: gray;
+  overflow: hidden;
+  height: 600px;
+  width: 4400px;
+  overflow-x: auto;
+}
+
+.dragger {
+  width: 50px;
+  height: 100%;
+  background: red;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+.dragger:hover {
+  background: blue;
+}
+/*# sourceMappingURL=index.css.map */
