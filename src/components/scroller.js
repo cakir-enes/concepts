@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 
-export const Scroller = ({direction}) => {
+export const Scroller = ({elemSupplier,  direction}) => {
 
     const [inertia, setInertia] = useState(0)
 
@@ -17,18 +17,20 @@ export const Scroller = ({direction}) => {
     const scroll = useCallback(() => {
         const speed = Math.floor(Math.pow(2, inertia / 12))
         console.log("Scrolling " + speed)
+        const elem = elemSupplier()
         switch (direction) {
             case "right":
-                window.scrollBy(speed, 0)
+                elem.scrollBy(20, 0)
+                // elem.scrollBy(speed, 0)
                 break
             case "left":
-                window.scrollBy(-speed, 0)
+                elem.scrollBy(-speed, 0)
                 break
             case "up":
-                window.scrollBy(0, speed)
+                elem.scrollBy(0, speed)
                 break
             case "down":
-                window.scrollBy(0, -speed)
+                elem.scrollBy(0, -speed)
                 break
             default:
                 console.error("Invalid Direction")
