@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Rnd } from "react-rnd";
-import { poses, dims } from '../view';
+import {poses, dims} from "../stores"
+import { useStore } from "../stores"
 
 export const Card = ({ val, index }) => {
     const [pos, setPos] = useState(poses[index]);
