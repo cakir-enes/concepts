@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 export const Scroller = ({elemSupplier,  direction}) => {
 
     const [inertia, setInertia] = useState(0)
-
+    
     const style = useMemo(() => {
         switch (direction) {
             case "right":
@@ -15,26 +15,26 @@ export const Scroller = ({elemSupplier,  direction}) => {
     }, [direction])
 
     const scroll = useCallback(() => {
-        const speed = Math.floor(Math.pow(2, inertia / 12))
-        console.log("Scrolling " + speed)
-        const elem = elemSupplier()
-        switch (direction) {
-            case "right":
-                elem.scrollBy(20, 0)
-                // elem.scrollBy(speed, 0)
-                break
-            case "left":
-                elem.scrollBy(-speed, 0)
-                break
-            case "up":
-                elem.scrollBy(0, speed)
-                break
-            case "down":
-                elem.scrollBy(0, -speed)
-                break
-            default:
-                console.error("Invalid Direction")
-        }
+        // const speed = Math.floor(Math.pow(2, inertia / 12))
+        // console.log("Scrolling " + speed)
+        // const elem = elemSupplier()
+        // switch (direction) {
+        //     case "right":
+        //         elem.scrollBy(20, 0)
+        //         // elem.scrollBy(speed, 0)
+        //         break
+        //     case "left":
+        //         elem.scrollBy(-speed, 0)
+        //         break
+        //     case "up":
+        //         elem.scrollBy(0, speed)
+        //         break
+        //     case "down":
+        //         elem.scrollBy(0, -speed)
+        //         break
+        //     default:
+        //         console.error("Invalid Direction")
+        // }
     }, [inertia])
 
     const mouseMoved = useCallback((e) => {

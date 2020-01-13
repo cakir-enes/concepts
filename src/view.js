@@ -1,51 +1,24 @@
-import React, { useState, useCallback, useEffect, useMemo, useRef, forwardRef } from 'react'
+import React, { useState, useLayoutEffect, useEffect, useMemo, useRef, forwardRef } from 'react'
 import Moveable from "react-moveable"; // preact-moveable
-import { Rnd } from "react-rnd"
 import { Scroller } from "./components/scroller"
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window"
 import create from 'zustand';
+import 'react-virtualized/styles.css';
+import {Collection} from "react-virtualized"
+import { Card } from './components/Card';
 
-const poses = [{x: 150, y: 0}]
+export const poses = Array.from({length: 8}, ()  => ({x: 150, y: 0}))
+export const dims = Array.from({length: 8}, () => ({w: 250, h: 250}))
 
 const [useStore] = create(set => ({
     cards:  [],
-    positions: [],
+    draggingCard: null,
+    dragCard: (i) => set({draggingCard: i}),
+    maxWidth: 0,
+    updateWidth: w => set({maxWidth: w})
 }))
 
-const Card = ({ val }) => {
-    const [pos, setPos] = useState(poses[0])
-    const [size, setSize] = useState({w: 400, h: 190})
-    a = [].reduce()
-    return (
-        <div
-        // style={{
-        //     zIndex: 4
-        // }}
-        >
-            <Rnd
-                default={{
-                    x: pos.x,
-                    y: pos.y,
-                    width: size.w,
-                    height: size.h
-                }}
-                onDragStop={(e,d) => {setPos({x: d.x, y: d.y}); poses[0] = {x: d.x, y: d.y}}}
-                minWidth={500}
-                minHeight={190}
-                bounds="window"
-                enableUserSelectHack={false}
-            >
-                <div
-                    className="box"
-                    style={{ background: "blue", margin: 0, height: '100%', padding: '12px' }}
-                >
-                    <textarea style={{ width: "100%", height: "100%" }} defaultValue={val} />
-                </div>
-            </Rnd>
-        </div>
-    )
-}
 
 const Box = () => (
     <div
@@ -58,7 +31,7 @@ const Box = () => (
 
 function handleOnWheel(e) {
     // Your handler goes here ...
-    console.log(e.target)
+    // console.log(e.target)
     // console.log("handleOnWheel()",e.deltaY);
 }
 
@@ -82,32 +55,47 @@ export const Vieww = () => {
         </AutoSizer>
     )
 }
+function useWindowSize() {
+    const [size, setSize] = useState([0, 0]);
+    useLayoutEffect(() => {
+      function updateSize() {
+        setSize([window.innerWidth, window.innerHeight]);
+      }
+      window.addEventListener('resize', updateSize);
+      updateSize();
+      return () => window.removeEventListener('resize', updateSize);
+    }, []);
+    return size;
+  }
+  
+const cellRenderer = ({index, key, style}) => <div key={key} style={style}><Card index={index} val={index} /></div>
+const cellSizeAndPositionGetter = ({index}) => ({height: dims[index].h, width: dims[index].w, x: poses[index].x, y: poses[index].y})
+
 export const View = () => {
     const listRef = useRef()
-
+    const [w, _] = useWindowSize()
+    const updateWidth = useStore(s => s.updateWidth)
+    useEffect(() => {
+        console.log("W: " + w)
+        updateWidth(w)}
+        , [])
+    useEffect(() => {
+        console.log("WW: " + w)
+        updateWidth(w)
+    }, [w])
     return (
-        <div className="view">
-            <AutoSizer>
-                {({ height, width }) => (
-                    <List
-                        className="List"
-                        // direction="horizontal"
-                        layout="horizontal"
-                        height={height}
-                        itemCount={4}
-                        itemSize={width}
-                        width={width}
-                        // ref={listRef}
-                        outerElementType={outerElementType}
-                        innerRef={listRef}
-                    >
-                        {Row}
-
-                    </List>
-                )}
-            </AutoSizer>
-            <Scroller elemSupplier={() => document.getElementsByClassName("List")[0]} direction="left" />
-            <Scroller elemSupplier={() => document.getElementsByClassName("List")[0]} direction="right" />
+        <div className="view" ref={listRef}>
+            
+            <Collection
+            className="List"
+           cellCount={poses.length}
+           cellRenderer={cellRenderer}
+           cellSizeAndPositionGetter={cellSizeAndPositionGetter}
+           height={800}
+           width={3400}
+           
+           />
+            
         </div>
     )
 }
