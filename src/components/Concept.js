@@ -1,13 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Collection } from "react-virtualized";
-import { Card } from './index';
-import {poses, dims} from "../stores"
 import { useWindowSize } from "../hooks"
-import { useStore } from "../stores"
+import { useStore, useContent } from "../stores"
+import {Card} from "./index"
 
-
-const cellRenderer = ({ index, key, style }) => <div key={key} style={style}><Card index={index} val={index} /></div>;
-const cellSizeAndPositionGetter = ({ index }) => ({ height: dims[index].h, width: dims[index].w, x: poses[index].x, y: poses[index].y });
 
 export const Concept = () => {
     
@@ -15,18 +11,34 @@ export const Concept = () => {
     const [w, _] = useWindowSize();
     const updateWidth = useStore(s => s.updateWidth);
     
+    const contentStore = useContent()
+    
     useEffect(() => {
         updateWidth(w);
     }, []);
     
     useEffect(() => {
-        console.log("WW: " + w);
         updateWidth(w);
     }, [w]);
+
+    useEffect(() => {
+        console.log("READY")
+        return () => console.log("GONE")
+    }, [])
+
+    const cellRenderer = useCallback(({index, key, style}) => {
+        const content = contentStore.content[index]
+         return <div key={key} style={style}><Card index={index} val={content} /> </div>
+    }, [])
+
+    const cellSizeAndPositionGetter = ({index}) => {
+        const card = contentStore.sizesAndPoses[index]
+        return {height: card.h, width: card.w, x: card.x, y: card.y}
+    }
     
     return (<div className="view" ref={listRef}>
 
-        <Collection className="List" cellCount={poses.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={800} width={3400} />
+        <Collection className="List" cellCount={contentStore.content.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={800} width={3400} />
 
     </div>);
 };

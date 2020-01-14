@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { Rnd } from "react-rnd";
-import {poses, dims} from "../stores"
-import { useStore } from "../stores"
+
+import { useStore, useContent } from "../stores"
 
 export const Card = ({ val, index }) => {
-    const [pos, setPos] = useState(poses[index]);
-    const [size, setSize] = useState(dims[index]);
+    
+    const sizePos = useContent(c => c.sizesAndPoses[index])
+    const [pos, setPos] = useState({x: sizePos.x , y: sizePos.y});
+    const [size, setSize] = useState({w: sizePos.w, h: sizePos.h});
     const maxWidth = useStore(s => s.maxWidth);
     const ref = useRef();
     
