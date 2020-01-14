@@ -3,6 +3,7 @@ import { Collection } from "react-virtualized";
 import { useWindowSize } from "../hooks"
 import { useStore, useContent } from "../stores"
 import {Card} from "./index"
+import { Aside } from './Aside';
 
 
 export const Concept = () => {
@@ -39,5 +40,6 @@ export const Concept = () => {
     return (
     <div className="view" ref={listRef} onWheel={e => {listRef.current.scrollBy(e.deltaY * 2, 0)}}>
         <Collection className="List" cellCount={contentStore.content.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={800} width={3400} />
+        <Aside />
     </div>);
 };

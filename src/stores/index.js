@@ -33,7 +33,10 @@ export const [useContent] = create(log(immer(set => ({
     content: ["ABC", "VIKVIKVIK", "ZXCZCXCXZ"],
     sizesAndPoses: dims,
     addCard: (card) => set({content: [...content, card]}),
-    // remCardWithIndex: (i) => set(s => {content: s.content}),
+    remCardWithIndex: (i) => set(s => {
+       s.content[i] = null
+       s.content.filter(c => c !== null)
+    }),
     cardWithIndex: (i) => get().content[i],
     updateCardSize: (index, newSize) => set(s => {
         const sizeAndPose = s.sizesAndPoses[index]
@@ -42,6 +45,10 @@ export const [useContent] = create(log(immer(set => ({
       updateCardPosition: (index, newPos) => set(s => {
         const sizeAndPose = s.sizesAndPoses[index]
         s.sizesAndPoses[index] = {...sizeAndPose, x: newPos.x, y: newPos.y}
-      })
-      
+      })      
+}))))
+
+export const [useAsideStore] = create(log(immer(set => ({
+    cards: [],
+    asideCard: (info) => set(s => ({info})),
 }))))
