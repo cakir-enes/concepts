@@ -36,9 +36,8 @@ export const Concept = () => {
         return {height: card.h, width: card.w, x: card.x, y: card.y}
     }
     
-    return (<div className="view" ref={listRef}>
-
+    return (
+    <div className="view" ref={listRef} onWheel={e => {listRef.current.scrollBy(e.deltaY * 2, 0)}}>
         <Collection className="List" cellCount={contentStore.content.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={800} width={3400} />
-
     </div>);
 };
