@@ -6,39 +6,24 @@ html, body, #root, #root > div {
 
   }
 
-  // .box {
-  //     background: white;
-  //     overflow: hidden;
-  //     & img {
-  //       height: 80px;
-  //     }
-  // }
+
+#app {
+  // display: grid;
+  // grid-template-rows: 1fr 150px;
+}
+
+.box {
+  z-index: 5;
+  position: relative;
+}
 
   .view {
-      // display: flex;
       background: gray;
       overflow: hidden;
-      height: 100vh;
-      // width: 4400px;
-      overflow-x: auto;
-      // height: 100%;
-    
-      // grid-template-columns: auto;
-      // grid-template-rows: 1fr;
+      overflow-x: scroll;
+      position: relative;
+      
   }
-
-  // .dragger {
-  //   width: 50px;
-  //   height: 100%;
-  //   background: red;
-  //   position: fixed;
-  //   // position: absolute;
-  //   right: 0;
-  //   top: 0;
-  //   &:hover {
-  //     background: blue;
-  //   }
-  // }
 
   .List {
     border: 1px solid #d9dddd;
@@ -54,4 +39,16 @@ html, body, #root, #root > div {
   
   .ListItemEven {
     background-color: #f8f8f0;
+  }
+
+  .aside {
+    
+    position: absolute;
+    left: 15px;
+    bottom: 35px;
+    right: 15px;
+    background: red;
+    opacity: 10%;
+    height: 20%;
+    z-index: 0;
   }

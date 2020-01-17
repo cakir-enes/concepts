@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Concept} from "./components"
+import {Concept, Aside} from "./components"
 import 'react-virtualized/styles.css';
 
+const App = () => <><Concept /><Aside /></>
 var mountNode = document.getElementById("app");
-ReactDOM.render(<Concept />  , mountNode);
+ReactDOM.render(<App />  , mountNode);

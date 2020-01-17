@@ -5,11 +5,16 @@ html, body, #root, #root > div {
           box-sizing: border-box;
 }
 
+.box {
+  z-index: 5;
+  position: relative;
+}
+
 .view {
   background: gray;
   overflow: hidden;
-  height: 100vh;
-  overflow-x: auto;
+  overflow-x: scroll;
+  position: relative;
 }
 
 .List {
@@ -33,5 +38,16 @@ html, body, #root, #root > div {
 
 .ListItemEven {
   background-color: #f8f8f0;
+}
+
+.aside {
+  position: absolute;
+  left: 15px;
+  bottom: 35px;
+  right: 15px;
+  background: red;
+  opacity: 10%;
+  height: 20%;
+  z-index: 0;
 }
 /*# sourceMappingURL=index.css.map */

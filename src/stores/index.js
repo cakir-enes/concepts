@@ -33,8 +33,9 @@ export const [useConceptStore] = create(log(immer(set => ({
     cards: [{ content: "ABC", type: "text", x: 150, y: 0, w: 250, h: 250 }, { content: "ABC", type: "text", x: 150, y: 0, w: 250, h: 250 }, { content: "ABC", type: "text", x: 150, y: 0, w: 250, h: 250 }],
     addCard: (card) => set({ content: [...content, card] }),
     remCardWithIndex: (i) => set(s => {
-        s.content[i] = null
-        s.content.filter(c => c !== null)
+        s.cards = s.cards.filter((_, index) => index !== i)
+        // s.content.filter(c => c !== null)
+        console.log(s)
     }),
     updateCardSize: (index, newSize) => set(s => {
         s.cards[index].w = newSize.w

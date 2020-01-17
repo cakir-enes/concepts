@@ -9,21 +9,19 @@ import { Rnd } from "react-rnd";
 export const Concept = () => {
     
     const listRef = useRef();
-    const [w, _] = useWindowSize();
-    const updateWidth = useStore(s => s.updateWidth);
+    const [w, h] = useWindowSize();
     
     const cards = useConceptStore(s => s.cards)
     
-    useEffect(() => {
-        updateWidth(w);
-    }, []);
+    // useEffect(() => {
+    //     updateWidth(w);
+    // }, []);
     
-    useEffect(() => {
-        updateWidth(w);
-    }, [w]);
+    // useEffect(() => {
+    //     updateWidth(w);
+    // }, [w]);
 
     useEffect(() => {
-        console.log("READY")
         return () => console.log("GONE")
     }, [])
 
@@ -39,8 +37,7 @@ export const Concept = () => {
     
     return (
     <div className="view" ref={listRef} onWheel={e => {listRef.current.scrollBy(e.deltaY * 2, 0)}}>
-        <Collection className="List" cellCount={cards.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={800} width={3400} />
-        <Aside />
+        <Collection className="List" cellCount={cards.length} cellRenderer={cellRenderer} cellSizeAndPositionGetter={cellSizeAndPositionGetter} height={h-25} width={2 * w} />
     </div>);
 };
 
@@ -63,9 +60,10 @@ const Card = ({ index }) => {
         }} onDrag={(e, data) => {
             ref.current.updatePosition(data);
         }}
+        style={{zIndex: 5, position: "relative"}}
             onResizeStop={(e, dir, ref, delta, pos) => updateSize(index, { w: ref.style.width, h: ref.style.height })}
             onDragStop={(e, d) => {
-                cardDragged({ index: index, x: d.x, y: d.y, h: card.h, w: card.w })
+                cardDragged({ index: index, card: {content: card.content,  x: d.x, y: d.y, h: card.h, w: card.w} })
                 updatePos(index, { x: d.x, y: d.y })
             }}
 
