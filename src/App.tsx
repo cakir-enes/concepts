@@ -7,10 +7,17 @@ interface Props {
 }
 
 
-const useDraggable = (ref: React.RefObject<HTMLDivElement>, restrictParent: boolean = false) => {
+const useDragnResize = (ref: React.RefObject<HTMLDivElement>, restrictParent: boolean = false) => {
+  
   let [pos, setPos] = React.useState({ x: 0, y: 0 })
 
+  let [dims, setDims] = React.useState(() => {
+    let rect = ref.current?.getBoundingClientRect()
+    return {w: rect?.width || 0, h: rect?.height || 0}})
+  
+
   React.useEffect(() => {
+    ref.current!!.style.boxSizing = 'border-box'
     interact(ref.current as any)
       .draggable({
         // enable inertial throwing
@@ -36,15 +43,34 @@ const useDraggable = (ref: React.RefObject<HTMLDivElement>, restrictParent: bool
           }
         }
       })
+      .resizable({
+        edges: { left: false, right: true, bottom: true, top: false },
+        listeners: {
+          move (event: Interact.ResizeEvent) {
+            let {width, height} = event.rect
+            event.target.style.width = width + 'px'
+            event.target.style.height = height + 'px'
+            setDims({w: width, h: height})
+          }
+        },
+        modifiers: [
+          interact.modifiers.restrictSize({
+            min: { width: 200, height: 150 }
+          })
+        ],
+    
+        inertia: true
+      })
     return () => { }
-  }, [])
-  return pos
+  }, [ref.current])
+  
+  return {pos, dims}
 }
 
 const Shit = () => {
   const ref = React.createRef<HTMLDivElement>()
-  const pos = useDraggable(ref)
-  return <div className="ZXC" ref={ref}>
+  const pos = useDragnResize(ref)
+  return <div className="ZXC" ref={ref} style={{background: "red"}}>
     <h2>ASDASD</h2>
   </div>
 }
