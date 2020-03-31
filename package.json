@@ -14,7 +14,8 @@
   "dependencies": {
     "interactjs": "^1.9.7",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "zustand": "^2.2.3"
   },
   "devDependencies": {
     "@types/react": "^16.9.27",
