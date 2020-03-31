@@ -1,2 +1,2 @@
-export type ICard = {}
-export type ICardStore = { cards: ICard[], dropzone: ICard[], moving: ICard | null, setMoving: (c: ICard) => void, drop: (c: ICard) => void }
+export type ICard = { id: string, pos: { x: number, y: number }, location: "aside" | "concept" }
+export type ICardStore = { cards: ICard[], dropzone: ICard[], moving: ICard | null, setMoving: (c: ICard) => void, drop: (to: "aside" | "concept") => void }

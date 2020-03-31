@@ -6,7 +6,7 @@ import { Concept } from "./concept"
 
 const App = () => {
   return (
-    <div style={{ display: "grid", height: "800px", gridTemplateColumns: "1fr 10fr" }}>
+    <div id="concepts" style={{ display: "grid", height: "800px", gridTemplateColumns: "1fr 8fr" }}>
       <Aside />
       <Concept />
     </div>

@@ -2,9 +2,10 @@ import * as React from "react"
 import { useStore, ICard } from "."
 import interact from "interactjs"
 
+
 export const useDragnResize = (ref: React.RefObject<HTMLDivElement>, restrictParent: boolean = false, data: ICard) => {
 
-    let [pos, setPos] = React.useState({ x: 0, y: 0 })
+    let [pos, setPos] = React.useState(data.pos)
     let setMoving = useStore(s => s.setMoving)
     let [dims, setDims] = React.useState(() => {
         let rect = ref.current?.getBoundingClientRect()
@@ -13,34 +14,35 @@ export const useDragnResize = (ref: React.RefObject<HTMLDivElement>, restrictPar
 
     React.useEffect(() => {
         ref.current!!.style.boxSizing = 'border-box'
+        ref.current!!.style.transform = `translate(${pos.x}px, ${pos.y}px)`
         interact(ref.current as any)
             .draggable({
                 // enable inertial throwing
-                inertia: true,
+                inertia: false,
                 // keep the element within the area of it's parent
                 modifiers: [
                     interact.modifiers.restrictRect({
-                        restriction: 'parent',
+                        restriction: '#concepts',
                         endOnly: true,
-                        enabled: false
+                        enabled: true
                     })
                 ],
                 autoScroll: true,
                 listeners: {
                     // call this function on every dragmove event
                     start: (event: any) => {
-                        console.log(data)
                         setMoving(data)
                     },
                     move: (event: Interact.DragEvent) => {
                         setPos(prev => {
                             let x = prev.x + event.dx
                             let y = prev.y + event.dy
+                            data.pos = { x, y }
+                            setMoving({ ...data, pos: { x, y } })
                             event.target.style.transform = `translate(${x}px, ${y}px)`
                             return { x, y }
                         })
                     },
-
                 }
             })
             .resizable({
@@ -55,7 +57,7 @@ export const useDragnResize = (ref: React.RefObject<HTMLDivElement>, restrictPar
                 },
                 modifiers: [
                     interact.modifiers.restrictSize({
-                        min: { width: 200, height: 150 }
+                        // min: { width: 200, height: 150 }
                     })
                 ],
 
@@ -64,5 +66,5 @@ export const useDragnResize = (ref: React.RefObject<HTMLDivElement>, restrictPar
         return () => { ref.current && interact(ref.current as any).unset() }
     }, [ref.current])
 
-    return { pos, dims }
+    return { dims }
 }
