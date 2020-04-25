@@ -4,7 +4,7 @@ export type AppState = {
     activeConcept: string | "default",
     positions: {
         [key: string]: { x: number, y: number }
-    }
+    },
     aside: {
         id: "aside",
         cards: string[]
@@ -91,8 +91,19 @@ const { actions, reducer } = createSlice({
         },
         moved(state, { payload }: PayloadAction<{ id: string, x: number, y: number }>) {
             const pos = state.positions[payload.id]
-            pos.x += payload.x
-            pos.y += payload.y
+            pos.x = payload.x
+            pos.y = payload.y
+
+            if (pos.x < -100) {
+                if (state.aside.cards.findIndex(id => id === payload.id) < 0)
+                    state.aside.cards.push(payload.id)
+                pos.x = -100
+                pos.y = window.innerHeight / 2 - 150
+            } else {
+                const idx = state.aside.cards.findIndex(id => id === payload.id)
+                if (idx < 0) return
+                state.aside.cards.splice(idx, 1)
+            }
         }
     }
 })
