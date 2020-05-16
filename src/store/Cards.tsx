@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, configureStore, createEntityAdapter } from "@reduxjs/toolkit"
+import { useDispatch } from "react-redux"
 
 export type AppState = {
     activeConcept: string | "default",
@@ -16,11 +17,18 @@ export type AppState = {
     cards: {
         byId: { [key: string]: { id: string, location: string, content: string | undefined } },
         allIds: string[]
-    }
+    },
+    editing: {
+        cardId: string,
+    } | undefined,
 }
+
+
+
 
 const initialState: AppState = {
     activeConcept: "default",
+    editing: undefined,
     aside: {
         id: "aside",
         cards: []
@@ -84,31 +92,42 @@ const { actions, reducer } = createSlice({
         setAside(state, { payload }: PayloadAction<{ srcId: string, cardId: string }>) {
             const card = state.cards.byId[payload.cardId]
             if (card.location === "aside") return
-            const origConcept = state.concepts.byId[card.location]
+            // const origConcept = state.concepts.byId[card.location]
             card.location = "aside"
-            delete origConcept.cards[origConcept.cards.findIndex(id => id === payload.cardId)]
+            // delete origConcept.cards[origConcept.cards.findIndex(id => id === payload.cardId)]
             state.aside.cards.push(card.id)
         },
         moved(state, { payload }: PayloadAction<{ id: string, x: number, y: number }>) {
             const pos = state.positions[payload.id]
+            const card = state.cards.byId[payload.id]
             pos.x = payload.x
             pos.y = payload.y
 
             if (pos.x < -100) {
-                if (state.aside.cards.findIndex(id => id === payload.id) < 0)
+                if (state.aside.cards.findIndex(id => id === payload.id) < 0) {
+                    card.location = "aside"
                     state.aside.cards.push(payload.id)
+                }
                 pos.x = -100
                 pos.y = window.innerHeight / 2 - 150
             } else {
                 const idx = state.aside.cards.findIndex(id => id === payload.id)
                 if (idx < 0) return
                 state.aside.cards.splice(idx, 1)
+                card.location = state.activeConcept
             }
+        },
+        startEditing(state, { payload }: PayloadAction<{ cardId: string, conceptId: string }>) {
+            state.editing = { cardId: payload.cardId }
+        },
+        stopEditing(state, _: PayloadAction<null | undefined>) {
+            state.editing = undefined
         }
+
     }
 })
 
 const store = configureStore({ reducer })
-export const { move, setAside, moved } = actions
+export const { move, setAside, moved, startEditing, stopEditing } = actions
 
 export default store

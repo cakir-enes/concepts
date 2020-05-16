@@ -1,86 +1,91 @@
 import * as React from 'react';
-import interact from "interactjs"
 import { useEffect, useRef, useState } from "react";
-import { Provider, useSelector, useDispatch } from "react-redux"
-import store, { move, setAside, moved } from './store/Cards';
+import { useSelector, useDispatch } from "react-redux"
+import { moved, startEditing } from './store/Cards';
 import { AppState } from "./store/Cards"
 import { Rnd } from "react-rnd"
+import { Edit } from './Edit';
+import ScrollContainer from "react-indiana-drag-scroll"
+import { motion, Variants, useTransform, useElementScroll } from "framer-motion"
+import { Concept } from './Concept';
 
-const dummyCards = {
-    item1: { id: "item1" },
-    item2: { id: "item2" },
-    item3: { id: "item3" },
-    item4: { id: "item4" },
-}
 
-const dummyLocs = {
-    main: ["item1", "item2", "item3", "item4"],
-    drop1: [],
-    drop2: []
-}
 
-const App: React.FC = (props) => {
+const App: React.FC = () => {
 
-    let [concepts, cards] = useSelector((s: AppState) => [s.concepts, s.cards])
-    let dispatch = useDispatch()
+    let [] = useSelector((s: AppState) => [s.concepts, s.cards])
 
     return (
 
-        <div>
-            <Aside />
+        <>
             <Concept />
-        </div>
+            <Edit />
+        </>
     )
 }
 
-interface IConcept {
-    id: string
-    cards: ICard[]
-}
 
 interface ICard {
     id: string
 }
 
-const Aside: React.FC<{}> = (props) => {
-    let cards = useSelector((s: AppState) => s.aside.cards.map(id => s.cards.byId[id]))
-    return (
-        <div id="aside" className="dropzone" style={{ position: "absolute", width: "200px", height: "500px", top: "25vh", left: "-50px", background: "yellow", zIndex: 2 }}>
-            {cards.map(card => (<Card key={card.id} id={card.id} />))}
-        </div>
-    )
-}
 
-const Concept: React.FC<{}> = (props) => {
-    let concept = useSelector((s: AppState) => s.concepts.byId[s.activeConcept])
-    let cards = useSelector((s: AppState) => concept.cards.map(id => s.cards.byId[id]).filter(card => card.location !== "aside"))
 
-    return (
-        <div id={concept.id} className="dropzone" style={{ width: "100wh", height: "calc(100vh - 35px)", margin: "15px", background: "red" }}>
-            {cards.map(c => (<Card key={c.id} id={c.id} />))}
-        </div>)
-}
+// const Card: React.FC<{ id: string }> = (props) => {
+//     const [card, pos] = useSelector((s: AppState) => [s.cards.byId[props.id], s.positions[props.id]])
+//     const ref = useRef<HTMLDivElement>(null)
+//     const dispatch = useDispatch()
+//     const position = useRef({ x: 0, y: 0 })
 
-const Card: React.FC<{ id: string }> = (props) => {
-    const card = useSelector((s: AppState) => s.cards.byId[props.id])
-    const pos = useSelector((s: AppState) => s.positions[props.id])
-    const ref = useRef<Rnd | null>(null)
-    const dispatch = useDispatch()
+//     useEffect(() => {
+//         console.log(card.location)
+//     }, [card.location])
 
-    return (
-        <Rnd
-            ref={ref}
-            className="card"
-            position={pos}
-            onDragStop={(e, d) => {
-                dispatch(moved({ id: props.id, x: d.x, y: d.y }))
-            }}
-            style={{
-                width: "50px", height: "50px", background: "cyan", zIndex: 2
-            }}
-        >
-            {props.id}
-        </Rnd>
-    )
-}
+//     useEffect(() => {
+//         if (!ref.current) return
+
+//         let inter: any = InteractJS.default(ref.current)
+//         inter.draggable({
+//             listeners: {
+//                 move(event: any) {
+//                     let pos = position.current
+//                     pos.x += event.dx
+//                     pos.y += event.dy
+
+//                     event.target.style.transform =
+//                         `translate(${pos.x}px, ${pos.y}px)`
+//                 },
+//                 end(event: any) {
+//                     let pos = position.current
+//                     console.log(pos.x, pos.y)
+//                     if (pos.x < - 100) {
+//                         pos.x = -100
+//                         pos.y = window.innerHeight / 2 - 150
+//                         event.target.style.transform =
+//                             `translate(${pos.x}px, ${pos.y}px)`
+//                         dispatch(setAside({ srcId: card.location, cardId: card.id }))
+//                     } else {
+//                         dispatch(moved({ id: props.id, x: position.current.x, y: position.current.y }))
+//                     }
+//                 }
+//             }
+//         }
+//         )
+//     }, [])
+
+//     return (
+//         <div
+//             ref={ref}
+//             className="card"
+//             id={props.id}
+//             style={{
+//                 background: "cyan", zIndex: 2, position: false ? "fixed" : "absolute", height: "200px", width: "400px", touchAction: "none",
+//             }}
+//         >
+//             {/* <button onClick={() => dispatch(startEditing({ cardId: props.id, conceptId: card.location }))}>EDIT</button> */}
+//             {/* {props.id} */}
+//         </div>
+//     )
+// }
 export default App;
+
