@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux"
 import { AppState } from "./store/Cards"
 import ScrollContainer from "react-indiana-drag-scroll"
-import { motion, useTransform, useElementScroll } from "framer-motion"
+import { motion, useTransform, useElementScroll, useSpring } from "framer-motion"
 import { Card } from './Card';
 
 
@@ -14,31 +14,24 @@ export const Concept: React.FC<{}> = () => {
     let conceptRef = useRef<HTMLDivElement>(null)
     let { scrollXProgress } = useElementScroll(ref)
     let containerRef = useRef<HTMLDivElement>(null)
+    const [isComplete, setIsComplete] = useState(false);
 
     // let ratio = useTransform(scrollXProgress, )
-    let [width, setWidth] = useState(window.innerWidth)
+    let [width, setWidth] = useState(window.innerWidth + 120)
 
     let [ratio, setRatio] = useState(0)
-    let scale = useTransform(scrollXProgress, [ratio, 1.0], [0, 1])
+    let scale = useTransform(scrollXProgress, [0.8, 1.0], [0, 1])
+    const pathLength = useSpring(scale, { stiffness: 400, damping: 90 });
 
     useEffect(() => {
         return scrollXProgress.onChange(p => {
             console.log(p)
-            if (p > 0.999) {
+            if (p >= 1) {
                 setWidth(w => w + window.innerWidth)
             }
         })
     }, [scrollXProgress])
-
-    // TODO: Fix animation, ratio track
-    useEffect(() => {
-        if (!containerRef.current || !conceptRef.current) return
-        let r = conceptRef.current.getBoundingClientRect().width / containerRef.current.getBoundingClientRect().width
-        console.count(`RATIO: ${r}`)
-        setRatio(r - 0.3)
-    }, [width, containerRef, containerRef.current, conceptRef, conceptRef.current])
-
-
+    useEffect(() => scale.onChange(v => setIsComplete(v >= 1)), [scale]);
     return (
         <>
             <ScrollContainer
@@ -48,16 +41,37 @@ export const Concept: React.FC<{}> = () => {
                 style={{ position: "relative" }}
                 hideScrollbars={false}>
                 <motion.div style={{ display: "flex", width: "fit-content" }} ref={containerRef} layoutTransition>
-                    <div id={concept.id} ref={conceptRef} className="dropzone patterno" style={{ minWidth: width, maxWidth: width, width: "auto", height: "calc(100vh - 35px)", display: "flex" }}>
+                    <div id={concept.id} ref={conceptRef} className="dropzone patterno" style={{ minWidth: width, maxWidth: width, width: "auto", height: "98vh", display: "flex" }}>
                         {cards.map(c => (<Card key={c.id} id={c.id} />))}
                     </div>
                     <div className="add-page-container">
-                        <motion.div className="add-page">
-                            <motion.div className="add-page-filler" style={{ scaleY: scale }} />
-                        </motion.div>
-                        <motion.div className="add-page" style={{ transform: "translateX(-40px)" }}>
-                            <motion.div initial={{ opacity: 0 }} className="add-page-filler" style={{ scaleY: scale, transform: "translateX(-40px)", opacity: scale }} />
-                        </motion.div>
+                        <svg viewBox="0 0 50 50" style={{ width: 36 }}>
+                            <motion.path
+                                fill="none"
+                                strokeWidth="5"
+                                stroke="#4bbcff"
+                                strokeDasharray="0 1"
+                                d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+                                style={{
+                                    pathLength,
+                                    rotate: 90,
+                                    translateX: 5,
+                                    translateY: 5,
+                                    scaleX: -1 // Reverse direction of line animation
+                                }}
+                            />
+                            <motion.path
+                                fill="none"
+                                strokeWidth="5"
+                                stroke="#4bbcff"
+                                d="M14,26 L 22,33 L 35,16"
+                                initial={false}
+                                strokeDasharray="0 1"
+                                onAnimationComplete={() => { if (isComplete) setWidth(w => w + window.innerWidth); setIsComplete(false) }}
+                                style={{ pathLength }}
+                            />
+                        </svg>
+                        <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: isComplete ? 1 : 0 }}>NEW PAGE</motion.h2>
                     </div>
                 </motion.div>
             </ScrollContainer>

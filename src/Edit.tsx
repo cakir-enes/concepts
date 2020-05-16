@@ -2,6 +2,7 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { AppState, stopEditing } from "./store/Cards"
+import { AnimatePresence, motion } from "framer-motion"
 
 
 export const Edit: React.FC<{}> = (props) => {
@@ -12,22 +13,32 @@ export const Edit: React.FC<{}> = (props) => {
 
     React.useEffect(() => setOpen(editing !== undefined), [editing])
 
-    return (open ?
+    return (
         <Modal onClose={() => dispatch(stopEditing())} open={open}>
-            <div>
-                ASDASDASD
-            </div>
+            <motion.div style={{ width: "500px", height: "300px", background: "red", margin: "auto", borderRadius: "1rem" }}>
+                <h2>ASDADS</h2>
+            </motion.div>
         </Modal >
-        : null
+
+
     )
 }
 
 const Modal: React.FC<{ onClose: () => void, open: boolean }> = (props) => (
     createPortal(
-        <div className="modal" style={{ position: "absolute", top: "40%", left: "50%" }}>
-            <button onClick={props.onClose}>&times;</button>
-            {props.children}
-        </div>, document.body
+        <AnimatePresence>
+            {props.open &&
+                <motion.div
+                    id="modal"
+                    className="modal"
+                    onClick={evt => { if (evt.target === evt.currentTarget) props.onClose() }}
+                    initial={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    {props.children}
+                </motion.div>}
+        </AnimatePresence>, document.body
     )
-
 )

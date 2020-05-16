@@ -3,6 +3,11 @@ h1 {
   background-color: black;
 }
 
+body {
+  margin: 0;
+  font-family: "D-DIN EXP";
+}
+
 .card {
 
     box-shadow:
@@ -47,6 +52,28 @@ border-radius: 8px;
 
 .add-page-container {
   display: flex;
+  position: fixed;
+  right: 0;
+  margin-right: 2rem;
+}
+.add-page-container h2 {
+  margin-left: 8px;
+}
+
+.modal {
+  z-index: 3;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.8);
+  will-change: opacity;
+  top: 0;
+  bottom: 0;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  cursor: "auto";
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
+  width: 100%;
 }
 
 .patterno {
