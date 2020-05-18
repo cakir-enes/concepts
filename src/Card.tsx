@@ -109,17 +109,17 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, setHover: (b: boolean) => 
     let ref = useRef<HTMLDivElement>(null);
     let [dragging, setDragging] = useState(true)
     let [pos, dim] = useSelector((s: AppState) => [s.positions[cardId], s.dimensions[cardId]])
-    let [state, setState] = useState({ pos, dim, prev: { pos, dim } })
+    let state = useMotionValue({ pos, dim, prev: { pos, dim } })
     let inverted = useInvertedScale()
     let dispatch = useDispatch()
 
     useEffect(() => {
-        return editing.onChange(newVal => setState(s => (
-            newVal
+        return editing.onChange(newVal => {
+            let s = state.get()
+            state.set(newVal
                 ? { pos: { x: 200, y: 200 }, dim: { w: 200, h: 200 }, prev: { pos: s.pos, dim: s.dim } }
-                : { ...s, pos: s.prev.pos, dim: s.prev.dim }
-
-        )))
+                : { ...s, pos: s.prev.pos, dim: s.prev.dim })
+        })
     }, [editing])
 
     useEffect(() => {
@@ -132,14 +132,13 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, setHover: (b: boolean) => 
                     },
                     end(event) {
                         setDragging(false)
-                        setState(s => {
-                            dispatch(move({ id: cardId, ...s.pos }))
-                            return { ...s }
-                        })
+                        let pos = state.get().pos
+                        dispatch(move({ id: cardId, ...pos }))
                     },
                     move(event) {
                         if (!editing.get()) {
-                            setState(s => ({ ...s, pos: { x: s.pos.x + event.dx, y: s.pos.y + event.dy } }))
+                            let s = state.get()
+                            state.set({ ...s, pos: { x: s.pos.x + event.dx, y: s.pos.y + event.dy } })
                         }
                     }
                 }
@@ -154,15 +153,13 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, setHover: (b: boolean) => 
                     },
                     end(event) {
                         setDragging(false)
-                        setState(s => {
-                            dispatch(resize({ id: cardId, ...s.dim }))
-                            return { ...s }
-                        })
+                        let s = state.get()
+                        dispatch(resize({ id: cardId, ...s.dim }))
                     },
                     move(event) {
                         let dim = { w: event.rect.width, h: event.rect.height }
                         if (!editing.get())
-                            setState(prev => ({ ...prev, dim }))
+                            state.set({ ...state.get(), dim })
                     }
                 },
                 modifiers: [
@@ -178,6 +175,12 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, setHover: (b: boolean) => 
         return () => inter.unset()
     }, [ref])
 
+    let [wrap, setWrap] = useState(state.get())
+
+    useEffect(() => {
+        state.onChange(w => setWrap(w))
+    }, [state])
+
     return (
         <motion.div
             ref={ref}
@@ -189,10 +192,10 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, setHover: (b: boolean) => 
                 ...style,
                 ...inverted,
                 position: "absolute",
-                width: state.dim.w,
-                height: state.dim.h,
-                top: state.pos.y,
-                left: state.pos.x,
+                width: wrap.dim.w,
+                height: wrap.dim.h,
+                top: wrap.pos.y,
+                left: wrap.pos.x,
                 boxSizing: "border-box",
                 touchAction: "none",
             }}
