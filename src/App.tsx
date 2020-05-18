@@ -4,7 +4,7 @@ import { AppState } from "./store/Cards"
 import { Rnd } from "react-rnd"
 import { Overlay } from './Overlay';
 import ScrollContainer from "react-indiana-drag-scroll"
-import { motion, Variants, useTransform, useElementScroll } from "framer-motion"
+import { motion, Variants, useTransform, useElementScroll, AnimatePresence } from "framer-motion"
 import { Concept } from './Concept';
 
 
@@ -16,6 +16,7 @@ const App: React.FC = () => {
     return (
 
         <>
+            <References />
             <Concept />
             <Overlay />
         </>
@@ -23,8 +24,32 @@ const App: React.FC = () => {
 }
 
 
-interface ICard {
-    id: string
+const References: React.FC<{}> = (props) => {
+
+    let editing = useSelector((s: AppState) => s.editing)
+
+    return <AnimatePresence>
+        {
+            editing &&
+            <motion.div
+                id="references"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ position: "absolute", zIndex: 4, right: 0, top: "10%", bottom: "10%", width: "45%", height: "80%", background: "red", display: "grid", gridTemplateRows: "1fr 1fr", gridGap: "50px" }}>
+                <IncomingReferences />
+
+                <IncomingReferences />
+            </motion.div>
+        }
+    </AnimatePresence>
+
+}
+
+const IncomingReferences: React.FC<{}> = (props) => {
+    return (
+        <div style={{ height: "100%", width: "100%", background: "blue" }}></div>
+    )
 }
 
 
