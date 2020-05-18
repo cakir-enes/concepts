@@ -6,6 +6,7 @@ import { Overlay } from './Overlay';
 import ScrollContainer from "react-indiana-drag-scroll"
 import { motion, Variants, useTransform, useElementScroll, AnimatePresence } from "framer-motion"
 import { Concept } from './Concept';
+import { closeSpring } from './Card';
 
 
 
@@ -33,9 +34,10 @@ const References: React.FC<{}> = (props) => {
             editing &&
             <motion.div
                 id="references"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, translateX: -400 }}
+                transition={{ ...closeSpring, delay: 0.2 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                exit={{ opacity: 0, translateX: 400 }}
                 style={{ position: "absolute", zIndex: 4, right: 0, top: "10%", bottom: "10%", width: "45%", height: "80%", background: "red", display: "grid", gridTemplateRows: "1fr 1fr", gridGap: "50px" }}>
                 <IncomingReferences />
 
