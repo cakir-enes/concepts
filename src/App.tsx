@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux"
-import { moved, startEditing } from './store/Cards';
 import { AppState } from "./store/Cards"
 import { Rnd } from "react-rnd"
-import { Edit } from './Edit';
+import { Overlay } from './Overlay';
 import ScrollContainer from "react-indiana-drag-scroll"
 import { motion, Variants, useTransform, useElementScroll } from "framer-motion"
 import { Concept } from './Concept';
@@ -19,7 +17,7 @@ const App: React.FC = () => {
 
         <>
             <Concept />
-            <Edit />
+            <Overlay />
         </>
     )
 }
