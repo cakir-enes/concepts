@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, configureStore, createEntityAdapter } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
 
-export type AppState = {
+export interface AppState {
     activeConcept: string | "default",
     positions: {
         [key: string]: { x: number, y: number }
@@ -21,6 +21,10 @@ export type AppState = {
         byId: { [key: string]: { id: string, location: string, content: string | undefined } },
         allIds: string[]
     },
+    references: {
+        [cardId: string]: { incoming: string[], outgoing: string[] }
+    },
+    lastTouched: string[],
     editing: {
         cardId: string,
     } | undefined,
@@ -36,6 +40,7 @@ const initialState: AppState = {
         id: "aside",
         cards: []
     },
+    lastTouched: [],
     concepts: {
         byId: {
             default: {
@@ -52,6 +57,11 @@ const initialState: AppState = {
             }
         }, allIds: ["default", "main", "drop1"]
     },
+    references: {
+        "item1": { incoming: ["item2", "item3"], outgoing: [] },
+        "item2": { incoming: [], outgoing: [] },
+        "item3": { incoming: [], outgoing: [] },
+    },
     positions: {
         "item1": { x: 0, y: 0 },
         "item2": { x: 0, y: 0 },
@@ -67,17 +77,20 @@ const initialState: AppState = {
             item1: {
                 id: "item1",
                 location: "default",
-                content: undefined
+                content: `Egestas ipsum eget etiam pulvinar elit nulla. Diam libero tellus elementum sapien enim. Condimentum bibendum turpis felis nibh lobortis odio. Ornare interdum condimentum aliquet massa bibendum id risus. Elementum, ultrices phasellus tellus duis. Aliquam nunc ut cursus scelerisque. Tempus enim, lorem enim vulputate massa ut. Donec pulvinar ut lorem odio ut non. Sit faucibus suscipit nec eget non. Aenean est in sagittis, hendrerit neque risus morbi. Gravida malesuada feugiat amet venenatis pretium eget volutpat et. Arcu volutpat id nulla erat eget ligula.
+                Id etiam in faucibus in. Cursus tempus egestas dui volutpat suspendisse. Sed ultrices gravida in proin. In vel vulputate.`
             },
             item2: {
                 id: "item2",
                 location: "default",
-                content: undefined
+                content: `Egestas ipsum eget etiam pulvinar elit nulla. Diam libero tellus elementum sapien enim. Condimentum bibendum turpis felis nibh lobortis odio. Ornare interdum condimentum aliquet massa bibendum id risus. Elementum, ultrices phasellus tellus duis. Aliquam nunc ut cursus scelerisque. Tempus enim, lorem enim vulputate massa ut. Donec pulvinar ut lorem odio ut non. Sit faucibus suscipit nec eget non. Aenean est in sagittis, hendrerit neque risus morbi. Gravida malesuada feugiat amet venenatis pretium eget volutpat et. Arcu volutpat id nulla erat eget ligula.
+                Id etiam in faucibus in. Cursus tempus egestas dui volutpat suspendisse. Sed ultrices gravida in proin. In vel vulputate.`
             },
             item3: {
                 id: "item3",
                 location: "default",
-                content: undefined
+                content: `Egestas ipsum eget etiam pulvinar elit nulla. Diam libero tellus elementum sapien enim. Condimentum bibendum turpis felis nibh lobortis odio. Ornare interdum condimentum aliquet massa bibendum id risus. Elementum, ultrices phasellus tellus duis. Aliquam nunc ut cursus scelerisque. Tempus enim, lorem enim vulputate massa ut. Donec pulvinar ut lorem odio ut non. Sit faucibus suscipit nec eget non. Aenean est in sagittis, hendrerit neque risus morbi. Gravida malesuada feugiat amet venenatis pretium eget volutpat et. Arcu volutpat id nulla erat eget ligula.
+                Id etiam in faucibus in. Cursus tempus egestas dui volutpat suspendisse. Sed ultrices gravida in proin. In vel vulputate.`
             }
         }, allIds: ["item1", "item2", "item3"]
     }

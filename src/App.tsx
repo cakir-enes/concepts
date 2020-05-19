@@ -4,18 +4,17 @@ import { AppState } from "./store/Cards"
 import { Rnd } from "react-rnd"
 import { Overlay } from './Overlay';
 import ScrollContainer from "react-indiana-drag-scroll"
-import { motion, Variants, useTransform, useElementScroll, AnimatePresence } from "framer-motion"
+import { motion, Variants, useTransform, useElementScroll } from "framer-motion"
 import { Concept } from './Concept';
-import { closeSpring } from './Card';
-
-
+import { openSpring } from "./Springs";
+import { GrAdd } from 'react-icons/gr';
+import References from './references';
 
 const App: React.FC = () => {
 
     let [] = useSelector((s: AppState) => [s.concepts, s.cards])
 
     return (
-
         <>
             <References />
             <Concept />
@@ -25,34 +24,7 @@ const App: React.FC = () => {
 }
 
 
-const References: React.FC<{}> = (props) => {
 
-    let editing = useSelector((s: AppState) => s.editing)
-
-    return <AnimatePresence>
-        {
-            editing &&
-            <motion.div
-                id="references"
-                initial={{ opacity: 0, translateX: -400 }}
-                transition={{ ...closeSpring, delay: 0.2 }}
-                animate={{ opacity: 1, translateX: 0 }}
-                exit={{ opacity: 0, translateX: 400 }}
-                style={{ position: "absolute", zIndex: 4, right: 0, top: "10%", bottom: "10%", width: "45%", height: "80%", background: "red", display: "grid", gridTemplateRows: "1fr 1fr", gridGap: "50px" }}>
-                <IncomingReferences />
-
-                <IncomingReferences />
-            </motion.div>
-        }
-    </AnimatePresence>
-
-}
-
-const IncomingReferences: React.FC<{}> = (props) => {
-    return (
-        <div style={{ height: "100%", width: "100%", background: "blue" }}></div>
-    )
-}
 
 
 
