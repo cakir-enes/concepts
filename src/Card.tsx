@@ -5,7 +5,7 @@ import { move, resize, startEditing, stopEditing } from './store/Cards';
 import { AppState } from "./store/Cards"
 import interact from "interactjs";
 import { Rnd, Props as RndProps } from "react-rnd"
-import { motion, MotionStyle, useMotionValue, useInvertedScale, MotionValue, Variants, useTransform } from 'framer-motion';
+import { motion, MotionStyle, useMotionValue, useInvertedScale, MotionValue, Variants, useTransform, HTMLMotionProps } from 'framer-motion';
 import { GrFastForward, GrEdit, GrClearOption, GrClose, GrInfo } from "react-icons/gr"
 import { openSpring, closeSpring } from './Springs';
 
@@ -149,6 +149,8 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
             console.count("RENDER " + cardId)
         })
 
+
+
         return (
             <motion.div
                 ref={ref}
@@ -166,8 +168,7 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
                     touchAction: "none",
                 }}
             >
-                <motion.div
-                    style={{ background: "black", height: "30px" }}
+                <DragHandle
                     onPanEnd={() => dispatch(move({ id: cardId, x: left.get(), y: top.get() }))}
                     onPan={(e, info) => {
                         top.set(top.get() + info.delta.y)
@@ -186,3 +187,11 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
             </motion.div>
         )
     })
+
+const DragHandle: React.FC<HTMLMotionProps<"div">> = (props) => {
+    return (
+        <motion.div onPan={props.onPan} onPanEnd={props.onPanEnd} style={{ display: "flex", cursor: "move", justifyContent: "center" }}>
+            <motion.div style={{ background: "gray", height: "4px", width: "80%", marginBottom: "auto", marginTop: "4px" }} />
+        </motion.div>
+    )
+}
