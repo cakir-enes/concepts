@@ -18,7 +18,7 @@ export interface AppState {
         allIds: string[]
     },
     cards: {
-        byId: { [key: string]: { id: string, location: string, content: string | undefined } },
+        byId: { [key: string]: ICard },
         allIds: string[]
     },
     references: {
@@ -30,7 +30,11 @@ export interface AppState {
     } | undefined,
 }
 
-
+export interface ICard {
+    id: string
+    location: string
+    content: string | undefined
+}
 
 
 const initialState: AppState = {
@@ -89,8 +93,7 @@ const initialState: AppState = {
             item3: {
                 id: "item3",
                 location: "default",
-                content: `Egestas ipsum eget etiam pulvinar elit nulla. Diam libero tellus elementum sapien enim. Condimentum bibendum turpis felis nibh lobortis odio. Ornare interdum condimentum aliquet massa bibendum id risus. Elementum, ultrices phasellus tellus duis. Aliquam nunc ut cursus scelerisque. Tempus enim, lorem enim vulputate massa ut. Donec pulvinar ut lorem odio ut non. Sit faucibus suscipit nec eget non. Aenean est in sagittis, hendrerit neque risus morbi. Gravida malesuada feugiat amet venenatis pretium eget volutpat et. Arcu volutpat id nulla erat eget ligula.
-                Id etiam in faucibus in. Cursus tempus egestas dui volutpat suspendisse. Sed ultrices gravida in proin. In vel vulputate.`
+                content: `Egestas ipsum eget etiam pulvinar elit nulla. Diam libero tellus elementum sapien enim. Condimentum bibendum turpis felis nibh lobortis odio. `
             }
         }, allIds: ["item1", "item2", "item3"]
     }
@@ -144,16 +147,24 @@ const { actions, reducer } = createSlice({
             dim.h = payload.h
         },
         startEditing(state, { payload }: PayloadAction<{ cardId: string, conceptId: string }>) {
+            state.lastTouched = state.lastTouched.filter(id => id !== payload.cardId)
             state.editing = { cardId: payload.cardId }
         },
         stopEditing(state, _: PayloadAction<null | undefined>) {
             state.editing = undefined
+        },
+        touch(state, { payload: cardId }: PayloadAction<string>) {
+            let lt = state.lastTouched
+            if (lt.find(id => id === cardId)) return
+            if (lt.length > 5)
+                lt.pop()
+            lt.push(cardId)
         }
 
     }
 })
 
 const store = configureStore({ reducer })
-export const { move, resize, setAside, startEditing, stopEditing } = actions
+export const { move, resize, setAside, startEditing, stopEditing, touch } = actions
 
 export default store

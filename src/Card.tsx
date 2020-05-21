@@ -1,25 +1,14 @@
 import * as React from 'react';
 import { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch, useStore } from "react-redux"
-import { move, resize, startEditing, stopEditing } from './store/Cards';
+import { move, resize, startEditing, stopEditing, touch } from './store/Cards';
 import { AppState } from "./store/Cards"
 import interact from "interactjs";
-import { Rnd, Props as RndProps } from "react-rnd"
 import { motion, MotionStyle, useMotionValue, useInvertedScale, MotionValue, Variants, useTransform, HTMLMotionProps } from 'framer-motion';
 import { GrFastForward, GrEdit, GrClearOption, GrClose, GrInfo } from "react-icons/gr"
 import { openSpring, closeSpring } from './Springs';
 
-const btnStyle: React.CSSProperties = { width: "2em", height: "2em", borderRadius: "50%", padding: "2px", background: "white", textAlign: "center", outline: "none" }
-const toolbarVars: Variants = {
-    show: {
-        translateX: 0,
-        scale: 1
-    },
-    hide: {
-        translateX: 50,
-        scale: 0
-    }
-}
+
 export const Card: React.FC<{ id: string }> = React.memo((props) => {
 
     const [card, pos, dim] = useSelector((s: AppState) => [s.cards.byId[props.id], s.positions[props.id], s.dimensions[props.id]], (l, r) => {
@@ -49,32 +38,36 @@ export const Card: React.FC<{ id: string }> = React.memo((props) => {
     })
 
     return (
-        <Comp pos={pos} dim={dim} cardId={props.id} editing={motEdit} style={{ display: "grid", gridTemplateRows: "30px 1fr 35px", zIndex: editing ? 4 : 2 }}>
+        <ResizeDrag pos={pos} dim={dim} cardId={props.id} editing={motEdit} style={{ display: "grid", gridTemplateRows: "30px 1fr 35px", zIndex: editing ? 4 : 2 }}>
             <motion.div style={{ ...inverted, cursor: "auto", overflow: "auto", margin: editing ? "16px" : 0 }}>
                 {props.id}
                 <p>
                     {card.content}
                 </p>
             </motion.div>
-            <div className="drag-handle"
-                style={{ width: "100%", height: "100%", display: "grid", gridTemplateColumns: "1fr 24px 24px", alignContent: "center", pointerEvents: "auto" }}>
-                <span className="tags" style={{ fontSize: "11px", marginTop: "auto", color: "#D73A49" }}>#programming, clojure, data</span>
-                <motion.button style={btnStyle}
+            <div
+                style={{ width: "100%", height: "100%", display: "grid", gridTemplateColumns: "1fr 24px 24px", gridGap: "14px", alignContent: "center", pointerEvents: "auto" }}>
+                <span className="tags" style={{ fontSize: "11px", marginTop: "auto", color: "#D73A49" }}>programming, clojure, data</span>
+                <div
+                    className="btn"
                     onClick={() => {
                         dispatch(startEditing({ cardId: props.id, conceptId: card.location }))
                         motEdit.set(true)
                     }}>
-                    <GrEdit style={{ marginTop: "2px" }} />
-                </motion.button>
-                <motion.button style={btnStyle}>
-                    <GrClose style={{ marginTop: "2px" }} />
-                </motion.button>
+                    <GrEdit style={{ marginLeft: "4px", fontSize: "14px" }} />
+                </div>
+                <div
+                    className="btn">
+                    <GrClose
+                        style={{ marginLeft: "4px", fontSize: "14px" }}
+                    />
+                </div>
             </div>
-        </Comp>
+        </ResizeDrag>
     )
 })
 
-const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties | undefined, cardId: string, pos: { x: number, y: number }, dim: { w: number, h: number } }> =
+const ResizeDrag: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties | undefined, cardId: string, pos: { x: number, y: number }, dim: { w: number, h: number } }> =
     (({ cardId, editing, children, style, pos, dim }) => {
         let ref = useRef<HTMLDivElement>(null);
         let state = useMotionValue({ pos, dim, prev: { pos, dim } })
@@ -94,10 +87,11 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
                 let [iw, ih] = [window.innerWidth, window.innerHeight]
                 if (e) {
                     prev.set({ w: w.get(), h: h.get(), top: top.get(), left: left.get() })
-                    w.set(iw * 0.42)
-                    h.set(ih * 0.8)
-                    top.set(ih * 0.1)
-                    left.set(90)
+                    w.set(iw * 0.30)
+                    let height = ih * 0.36
+                    h.set(height >= 400 ? height : 400)
+                    top.set(128)
+                    left.set(0.35 * iw)
                 } else {
                     let p = prev.get()
                     w.set(p.w)
@@ -108,7 +102,6 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
                 setEdits(e)
             })
         }, [editing])
-
 
         useEffect(() => {
             if (!ref.current) return;
@@ -153,13 +146,14 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
 
         return (
             <motion.div
+                onClick={() => dispatch(touch(cardId))}
                 ref={ref}
                 className="card"
                 layoutTransition={edits ? openSpring : closeSpring}
                 style={{
                     ...style,
                     ...inverted,
-                    position: true ? "fixed" : "absolute",
+                    position: edits ? "fixed" : "absolute",
                     width: w,
                     height: h,
                     top: top,
@@ -169,7 +163,7 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
                 }}
             >
                 <DragHandle
-                    onPanEnd={() => dispatch(move({ id: cardId, x: left.get(), y: top.get() }))}
+                    onPanEnd={() => { if (!edits) dispatch(move({ id: cardId, x: left.get(), y: top.get() })) }}
                     onPan={(e, info) => {
                         top.set(top.get() + info.delta.y)
                         left.set(left.get() + info.delta.x)
@@ -190,7 +184,7 @@ const Comp: React.FC<{ editing: MotionValue<boolean>, style: React.CSSProperties
 
 const DragHandle: React.FC<HTMLMotionProps<"div">> = (props) => {
     return (
-        <motion.div onPan={props.onPan} onPanEnd={props.onPanEnd} style={{ display: "flex", cursor: "move", justifyContent: "center" }}>
+        <motion.div onPan={props.onPan} onPanEnd={props.onPanEnd} style={{ display: "flex", justifyContent: "center" }}>
             <motion.div style={{ background: "gray", height: "4px", width: "80%", marginBottom: "auto", marginTop: "4px" }} />
         </motion.div>
     )
